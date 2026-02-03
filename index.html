@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>海南家庭旅游计划 - 详细版 2月20日-26日</title>
+
+    <!-- 高德地图API - 将通过 Serverless Function 动态加载 -->
+    <!-- API 密钥安全地存储在服务器端环境变量中 -->
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* 自定义样式 */
+        body {
+            font-family: 'Microsoft YaHei', 'SimSun', sans-serif;
+        }
+
+        /* 时间轴样式 */
+        .timeline-item {
+            position: relative;
+            padding-left: 2.5rem;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: -2rem;
+            width: 2px;
+            background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
+            z-index: 1;
+        }
+
+        /* 卡片悬停效果 */
+        .activity-card {
+            transition: all 0.3s ease;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 图片样式 */
+        .activity-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* 导航信息样式 */
+        .navigation-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-top: 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        /* 地图容器 */
+        #map-container {
+            height: 500px;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            #map-container {
+                height: 350px;
+            }
+
+            .timeline-item {
+                padding-left: 2rem;
+            }
+
+            .activity-image {
+                height: 150px;
+            }
+        }
+
+        /* 标签样式 */
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* 时间范围标签 */
+        .time-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
+
+    <!-- 页面头部 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                🏝️ 海南家庭旅游详细计划
+            </h1>
+            <p class="text-gray-600 mt-1">2月20日 - 2月26日 | 7天6晚 | 👨‍👩‍👧‍👦 三大2老1小（共6人）</p>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main class="container mx-auto px-4 py-8">
+
+        <!-- 地图展示区域 -->
+        <section class="mb-8 bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">🗺️ 行程路线图</h2>
+            <div id="map-container"></div>
+            <div class="mt-4 flex flex-wrap gap-2">
+                <span class="tag bg-blue-100 text-blue-800">📍 总里程：约600公里</span>
+                <span class="tag bg-green-100 text-green-800">⏱️ 总车程：约9小时</span>
+                <span class="tag bg-purple-100 text-purple-800">🏨 住宿：3家酒店</span>
+                <span class="tag bg-pink-100 text-pink-800">📸 景点：10+个</span>
+            </div>
+        </section>
+
+        <!-- 行程时间轴 -->
+        <section class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">📅 详细行程安排</h2>
+
+            <div id="timeline" class="space-y-0">
+                <!-- 时间轴内容将由JavaScript动态生成 -->
+            </div>
+        </section>
+
+        <!-- 温馨提示 -->
+        <section class="mt-8 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl shadow-lg p-6 border-l-4 border-yellow-400">
+            <h3 class="text-xl font-bold text-gray-800 mb-3">💡 温馨提示</h3>
+            <ul class="space-y-2 text-gray-700">
+                <li class="flex items-start">
+                    <span class="mr-2">🌞</span>
+                    <span>海南2月天气温暖，建议携带防晒霜、太阳镜和轻薄衣物</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="mr-2">🚗</span>
+                    <span>建议提前租车，自驾游更加方便灵活，注意安全驾驶</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="mr-2">📱</span>
+                    <span>提前下载高德地图APP，离线地图可以避免网络问题</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="mr-2">🏨</span>
+                    <span>旺季酒店紧张，建议提前预订并确认房型</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="mr-2">🍽️</span>
+                    <span>海鲜需要当场看价格，避免宰客；推荐的餐厅需提前预约</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="mr-2">🎆</span>
+                    <span>烟花需要在合法区域燃放，注意安全和环保</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="mr-2">👶</span>
+                    <span>带老人小孩出行，注意控制节奏，留出足够休息时间</span>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white mt-12 py-6 shadow-inner">
+        <div class="container mx-auto px-4 text-center text-gray-600">
+            <p>🌴 祝您和家人旅途愉快！ | 生成时间：2026年2月3日</p>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== 数据模拟区域 ====================
+
+        /**
+         * 行程数据结构 - 完全重写版本
+         * 包含详细的开始时间、结束时间、导航信息和图片URL
+         */
+        const travelData = {
+            tripName: "海南家庭旅游",
+            startDate: "2026-02-20",
+            endDate: "2026-02-26",
+            travelers: {
+                adults: 3,
+                seniors: 2,
+                children: 1,
+                total: 6
+            },
+            days: [
+                // 第1天：2月20日周三 - 儋州→东方→三亚崖州
+                {
+                    date: "2026-02-20",
+                    day: "第1天",
+                    weekday: "周三",
+                    route: "儋州 → 东方 → 三亚崖州",
+                    hotel: {
+                        name: "南山寺沐隐清欢渡雨林酒店",
+                        location: "三亚崖州",
+                        coordinates: [109.1738, 18.3089]
+                    },
+                    activities: [
+                        {
+                            startTime: "08:00",
+                            endTime: "10:00",
+                            type: "准备",
+                            title: "早起+收拾行李+酒店早餐",
+                            description: "悠闲的早晨，慢慢收拾行李，享用酒店早餐，磨蹭时间为老人和小孩做好出发准备",
+                            icon: "☕",
+                            image: "https://picsum.photos/seed/1019/800/600"
+                        },
+                        {
+                            startTime: "10:00",
+                            endTime: "11:30",
+                            type: "交通",
+                            title: "从儋州出发",
+                            description: "开启海南环岛之旅，沿途欣赏海南西部风光",
+                            icon: "🚗",
+                            navigation: {
+                                from: "儋州",
+                                to: "东方",
+                                distance: "100km",
+                                duration: "1.5h"
+                            },
+                            image: "https://picsum.photos/seed/1003/800/600"
+                        },
+                        {
+                            startTime: "12:00",
+                            endTime: "13:30",
+                            type: "餐饮",
+                            title: "东方午餐 - 四更烤乳猪",
+                            description: "品尝海南西部特色美食，四更烤乳猪皮脆肉嫩，是东方的招牌菜",
+                            location: "东方市",
+                            icon: "🍖",
+                            image: "https://picsum.photos/seed/1045/800/600"
+                        },
+                        {
+                            startTime: "13:30",
+                            endTime: "15:30",
+                            type: "交通",
+                            title: "继续前往三亚崖州",
+                            description: "沿西线高速前往三亚崖州区，途径美丽海岸线",
+                            icon: "🚗",
+                            navigation: {
+                                from: "东方",
+                                to: "南山寺酒店",
+                                distance: "150km",
+                                duration: "2h"
+                            },
+                            image: "https://picsum.photos/seed/1047/800/600"
+                        },
+                        {
+                            startTime: "15:30",
+                            endTime: "17:00",
+                            type: "住宿",
+                            title: "办理入住，酒店休息",
+                            description: "入住南山寺沐隐清欢渡雨林酒店，环境清幽，适合放松休息",
+                            icon: "🏨",
+                            image: "https://picsum.photos/seed/1024/800/600"
+                        },
+                        {
+                            startTime: "17:00",
+                            endTime: "18:30",
+                            type: "活动",
+                            title: "酒店内自由活动",
+                            description: "在酒店雨林环境中散步，呼吸新鲜空气，老人可以在房间休息",
+                            icon: "🌴",
+                            image: "https://picsum.photos/seed/1051/800/600"
+                        },
+                        {
+                            startTime: "18:30",
+                            endTime: "20:00",
+                            type: "餐饮",
+                            title: "酒店附近晚餐",
+                            description: "在酒店附近餐厅享用晚餐，尝试当地特色菜肴",
+                            icon: "🍽️",
+                            image: "https://picsum.photos/seed/1012/800/600"
+                        },
+                        {
+                            startTime: "20:00",
+                            endTime: "22:00",
+                            type: "休息",
+                            title: "早早休息",
+                            description: "第一天行程较累，早点休息为明天的南山寺法事活动养精蓄锐",
+                            icon: "😴",
+                            image: "https://picsum.photos/seed/1046/800/600"
+                        }
+                    ]
+                },
+
+                // 第2天：2月21日周四 - 南山寺法事
+                {
+                    date: "2026-02-21",
+                    day: "第2天",
+                    weekday: "周四",
+                    route: "南山寺法事一日游",
+                    hotel: {
+                        name: "南山寺沐隐清欢渡雨林酒店",
+                        location: "三亚崖州",
+                        coordinates: [109.1738, 18.3089]
+                    },
+                    activities: [
+                        {
+                            startTime: "07:00",
+                            endTime: "09:00",
+                            type: "休闲",
+                            title: "睡到自然醒+磨蹭时间",
+                            description: "充分休息后自然醒来，不着急出门，慢慢吃早餐准备",
+                            icon: "🌅",
+                            image: "https://picsum.photos/seed/1052/800/600"
+                        },
+                        {
+                            startTime: "09:00",
+                            endTime: "09:30",
+                            type: "交通",
+                            title: "前往南山寺",
+                            description: "短途驾车前往南山寺，准备参加法事活动",
+                            icon: "🚗",
+                            navigation: {
+                                from: "酒店",
+                                to: "南山寺",
+                                distance: "5km",
+                                duration: "10min"
+                            },
+                            image: "https://picsum.photos/seed/1030/800/600"
+                        },
+                        {
+                            startTime: "09:30",
+                            endTime: "12:00",
+                            type: "宗教活动",
+                            title: "参加南山寺法事活动",
+                            description: "参与庄严的佛教法事，感受心灵的宁静与洗礼",
+                            location: "南山寺",
+                            icon: "🙏",
+                            image: "https://picsum.photos/seed/1023/800/600"
+                        },
+                        {
+                            startTime: "12:00",
+                            endTime: "13:30",
+                            type: "餐饮",
+                            title: "南山寺素斋午餐",
+                            description: "品尝精致的佛门素斋，体验清淡健康的饮食文化",
+                            location: "南山寺素斋馆",
+                            icon: "🥗",
+                            image: "https://picsum.photos/seed/1025/800/600"
+                        },
+                        {
+                            startTime: "13:30",
+                            endTime: "17:00",
+                            type: "景点",
+                            title: "南山寺景区游览",
+                            description: "游览南山寺景区，参观108米高的海上观音像，欣赏壮观海景和佛教文化景观",
+                            location: "南山寺景区",
+                            icon: "🏯",
+                            image: "https://picsum.photos/seed/1015/800/600"
+                        },
+                        {
+                            startTime: "17:00",
+                            endTime: "17:30",
+                            type: "交通",
+                            title: "返回酒店休息",
+                            description: "返回酒店，让老人和小孩休息一下",
+                            icon: "🚗",
+                            navigation: {
+                                from: "南山寺",
+                                to: "酒店",
+                                distance: "5km",
+                                duration: "10min"
+                            },
+                            image: "https://picsum.photos/seed/1008/800/600"
+                        },
+                        {
+                            startTime: "18:30",
+                            endTime: "20:00",
+                            type: "餐饮",
+                            title: "崖州区特色本地菜晚餐",
+                            description: "品尝崖州海鲜或本地农家菜，推荐：文昌鸡、清蒸海鱼、四角豆",
+                            location: "崖州区",
+                            icon: "🦞",
+                            image: "https://picsum.photos/seed/1048/800/600"
+                        },
+                        {
+                            startTime: "20:00",
+                            endTime: "22:00",
+                            type: "休息",
+                            title: "酒店休息",
+                            description: "今天行程充实，早点休息准备明天的转场行程",
+                            icon: "😴",
+                            image: "https://picsum.photos/seed/1046/800/600"
+                        }
+                    ]
+                },
+
+                // 第3天：2月22日周五 - 接机→退房→万宁
+                {
+                    date: "2026-02-22",
+                    day: "第3天",
+                    weekday: "周五",
+                    route: "三亚崖州 → 机场 → 万宁日月湾",
+                    hotel: {
+                        name: "石梅湾/日月湾度假酒店",
+                        location: "万宁",
+                        coordinates: [110.3235, 18.7959]
+                    },
+                    activities: [
+                        {
+                            startTime: "07:00",
+                            endTime: "09:00",
+                            type: "准备",
+                            title: "起床+收拾行李+酒店早餐",
+                            description: "整理行李，退房前的准备工作，享用酒店早餐",
+                            icon: "🎒",
+                            image: "https://picsum.photos/seed/1044/800/600"
+                        },
+                        {
+                            startTime: "09:00",
+                            endTime: "10:00",
+                            type: "交通",
+                            title: "前往三亚凤凰机场",
+                            description: "驱车前往三亚凤凰国际机场接人",
+                            icon: "🚗",
+                            navigation: {
+                                from: "南山寺",
+                                to: "凤凰机场",
+                                distance: "50km",
+                                duration: "1h"
+                            },
+                            image: "https://picsum.photos/seed/1026/800/600"
+                        },
+                        {
+                            startTime: "10:00",
+                            endTime: "11:30",
+                            type: "接机",
+                            title: "机场等待+接人",
+                            description: "预计11:00航班落地，接到家人后团队正式集结",
+                            location: "三亚凤凰机场",
+                            icon: "✈️",
+                            image: "https://picsum.photos/seed/1011/800/600"
+                        },
+                        {
+                            startTime: "11:30",
+                            endTime: "12:00",
+                            type: "交通",
+                            title: "返回酒店退房",
+                            description: "回酒店取行李并办理退房手续",
+                            icon: "🚗",
+                            navigation: {
+                                from: "机场",
+                                to: "南山寺酒店",
+                                distance: "50km",
+                                duration: "1h"
+                            },
+                            image: "https://picsum.photos/seed/1009/800/600"
+                        },
+                        {
+                            startTime: "12:30",
+                            endTime: "14:00",
+                            type: "餐饮",
+                            title: "三亚市区午餐 - 海南菜",
+                            description: "推荐琼菜坊或阿浪海南菜，品尝正宗海南特色菜肴，顺路且评分高",
+                            location: "三亚市区",
+                            icon: "🍲",
+                            image: "https://picsum.photos/seed/1013/800/600"
+                        },
+                        {
+                            startTime: "14:00",
+                            endTime: "16:30",
+                            type: "交通",
+                            title: "前往万宁日月湾",
+                            description: "沿东线高速前往万宁，欣赏海南东部海岸风光",
+                            icon: "🚗",
+                            navigation: {
+                                from: "三亚市区",
+                                to: "万宁日月湾",
+                                distance: "120km",
+                                duration: "2.5h"
+                            },
+                            image: "https://picsum.photos/seed/1006/800/600"
+                        },
+                        {
+                            startTime: "16:30",
+                            endTime: "17:00",
+                            type: "住宿",
+                            title: "办理入住石梅湾/日月湾酒店",
+                            description: "入住度假酒店，日月湾是冲浪胜地，环境优美",
+                            icon: "🏨",
+                            image: "https://picsum.photos/seed/1037/800/600"
+                        },
+                        {
+                            startTime: "17:00",
+                            endTime: "18:30",
+                            type: "休闲",
+                            title: "日月湾沙滩边下午茶",
+                            description: "推荐冲浪吧咖啡或日落餐厅，欣赏海景享受下午茶时光",
+                            location: "日月湾",
+                            icon: "☕",
+                            image: "https://picsum.photos/seed/1040/800/600"
+                        },
+                        {
+                            startTime: "18:30",
+                            endTime: "20:00",
+                            type: "餐饮",
+                            title: "海南人家海鲜连锁店",
+                            description: "知名海鲜连锁品牌，明码标价，品质保证，适合家庭聚餐",
+                            location: "日月湾",
+                            icon: "🦐",
+                            image: "https://picsum.photos/seed/1014/800/600"
+                        },
+                        {
+                            startTime: "20:00",
+                            endTime: "21:00",
+                            type: "娱乐",
+                            title: "沙滩放烟花",
+                            description: "在沙滩上燃放烟花，为家庭团聚庆祝，注意安全和环保",
+                            location: "日月湾沙滩",
+                            icon: "🎆",
+                            image: "https://picsum.photos/seed/1041/800/600"
+                        },
+                        {
+                            startTime: "21:00",
+                            endTime: "23:00",
+                            type: "休息",
+                            title: "返回酒店休息",
+                            description: "今天转场和接机比较辛苦，好好休息",
+                            icon: "😴",
+                            image: "https://picsum.photos/seed/1046/800/600"
+                        }
+                    ]
+                },
+
+                // 第4天：2月23日周六 - 万宁日月湾深度体验
+                {
+                    date: "2026-02-23",
+                    day: "第4天",
+                    weekday: "周六",
+                    route: "万宁日月湾 → 山钦湾 → 万宁市区",
+                    hotel: {
+                        name: "石梅湾/日月湾度假酒店",
+                        location: "万宁",
+                        coordinates: [110.3235, 18.7959]
+                    },
+                    activities: [
+                        {
+                            startTime: "07:00",
+                            endTime: "09:00",
+                            type: "休闲",
+                            title: "自然醒+磨蹭+早餐",
+                            description: "睡到自然醒，慢悠悠享用早餐，不赶时间",
+                            icon: "🌅",
+                            image: "https://picsum.photos/seed/1050/800/600"
+                        },
+                        {
+                            startTime: "09:00",
+                            endTime: "12:00",
+                            type: "活动",
+                            title: "分组活动 - 成人冲浪/老人小孩赶海",
+                            description: "成人：日月湾冲浪体验课程（专业教练指导） | 老人+小孩：海边赶海、捡贝壳，适合全家",
+                            location: "日月湾",
+                            icon: "🏄",
+                            image: "https://picsum.photos/seed/1002/800/600"
+                        },
+                        {
+                            startTime: "12:00",
+                            endTime: "13:30",
+                            type: "餐饮",
+                            title: "廖家庄农家乐午餐",
+                            description: "万宁当地特色农家菜，环境舒适，适合家庭就餐，可以品尝地道的文昌鸡、东山羊",
+                            location: "万宁",
+                            icon: "🍲",
+                            image: "https://picsum.photos/seed/1021/800/600"
+                        },
+                        {
+                            startTime: "13:30",
+                            endTime: "14:30",
+                            type: "交通",
+                            title: "前往山钦湾",
+                            description: "短途驾车前往山钦湾（导航：日月湾→山钦湾，约15km，20min，留出机动时间）",
+                            icon: "🚗",
+                            navigation: {
+                                from: "日月湾",
+                                to: "山钦湾",
+                                distance: "15km",
+                                duration: "20min"
+                            },
+                            image: "https://picsum.photos/seed/1031/800/600"
+                        },
+                        {
+                            startTime: "14:30",
+                            endTime: "15:30",
+                            type: "休闲",
+                            title: "山也wild咖啡",
+                            description: "网红海景咖啡厅，快速打卡拍照，享用下午茶",
+                            location: "山钦湾",
+                            icon: "☕",
+                            image: "https://picsum.photos/seed/1042/800/600"
+                        },
+                        {
+                            startTime: "15:30",
+                            endTime: "16:00",
+                            type: "交通",
+                            title: "前往兴隆热带植物园",
+                            description: "驾车前往植物园（导航：山钦湾→植物园，约20km，30min）",
+                            icon: "🚗",
+                            navigation: {
+                                from: "山钦湾",
+                                to: "兴隆植物园",
+                                distance: "20km",
+                                duration: "30min"
+                            },
+                            image: "https://picsum.photos/seed/1032/800/600"
+                        },
+                        {
+                            startTime: "16:00",
+                            endTime: "17:00",
+                            type: "景点",
+                            title: "兴隆热带植物园游览",
+                            description: "快速游览核心区域，了解热带植物，适合老少（确保5点前结束）",
+                            location: "兴隆",
+                            icon: "🌺",
+                            image: "https://picsum.photos/seed/1036/800/600"
+                        },
+                        {
+                            startTime: "17:00",
+                            endTime: "18:30",
+                            type: "交通+餐饮",
+                            title: "返回万宁市区，虎婆香草鸭晚餐",
+                            description: "返回万宁市区享用晚餐（导航：植物园→万宁市区，约30km，40min，含就餐），万宁特色名菜，香草鸭风味独特",
+                            location: "万宁市区",
+                            icon: "🦆",
+                            navigation: {
+                                from: "兴隆植物园",
+                                to: "万宁市区",
+                                distance: "30km",
+                                duration: "40min"
+                            },
+                            image: "https://picsum.photos/seed/1016/800/600"
+                        },
+                        {
+                            startTime: "19:00",
+                            endTime: "20:00",
+                            type: "交通+休息",
+                            title: "返回酒店休息",
+                            description: "今天活动丰富，好好休息",
+                            icon: "😴",
+                            image: "https://picsum.photos/seed/1046/800/600"
+                        }
+                    ]
+                },
+
+                // 第5天：2月24日周日 - 万宁→陵水
+                {
+                    date: "2026-02-24",
+                    day: "第5天",
+                    weekday: "周日",
+                    route: "万宁 → 陵水清水湾",
+                    hotel: {
+                        name: "陵水三正月酒店",
+                        location: "陵水",
+                        coordinates: [110.0377, 18.5054]
+                    },
+                    activities: [
+                        {
+                            startTime: "07:00",
+                            endTime: "09:00",
+                            type: "活动",
+                            title: "看日出+晨跑+早餐",
+                            description: "早起在日月湾海滩看日出，晨跑锻炼身体，呼吸新鲜空气",
+                            location: "日月湾",
+                            icon: "🌅",
+                            image: "https://picsum.photos/seed/1038/800/600"
+                        },
+                        {
+                            startTime: "09:00",
+                            endTime: "10:30",
+                            type: "交通",
+                            title: "退房，前往陵水",
+                            description: "办理退房手续，驾车前往陵水清水湾",
+                            icon: "🚗",
+                            navigation: {
+                                from: "万宁",
+                                to: "陵水清水湾",
+                                distance: "50km",
+                                duration: "1h"
+                            },
+                            image: "https://picsum.photos/seed/1027/800/600"
+                        },
+                        {
+                            startTime: "10:30",
+                            endTime: "12:00",
+                            type: "住宿",
+                            title: "办理入住陵水三正月酒店",
+                            description: "入住陵水三正月酒店，这是一家设施完善的度假酒店",
+                            icon: "🏨",
+                            image: "https://picsum.photos/seed/1039/800/600"
+                        },
+                        {
+                            startTime: "12:00",
+                            endTime: "13:30",
+                            type: "餐饮",
+                            title: "石记鹅肉店午餐",
+                            description: "陵水特色美食，石记鹅肉是当地名店，鹅肉肥而不腻",
+                            location: "陵水",
+                            icon: "🦆",
+                            image: "https://picsum.photos/seed/1043/800/600"
+                        },
+                        {
+                            startTime: "14:00",
+                            endTime: "17:00",
+                            type: "活动",
+                            title: "自由选择活动（老少皆宜）",
+                            description: "方案A：酒店沙滩活动+泳池 | 方案B：清水湾沙滩漫步 | 方案C：陵水疍家渔排（近距离体验渔民生活，适合老人小孩）",
+                            location: "陵水",
+                            icon: "🏖️",
+                            image: "https://picsum.photos/seed/1033/800/600"
+                        },
+                        {
+                            startTime: "17:00",
+                            endTime: "18:30",
+                            type: "休闲",
+                            title: "酒店休息，观赏日落",
+                            description: "在酒店海滩观赏美丽的日落景色，拍照留念",
+                            icon: "🌅",
+                            image: "https://picsum.photos/seed/1035/800/600"
+                        },
+                        {
+                            startTime: "18:30",
+                            endTime: "20:00",
+                            type: "餐饮",
+                            title: "黎山里东山羊晚餐",
+                            description: "品尝黎族特色菜肴，东山羊是海南四大名菜之一",
+                            location: "陵水",
+                            icon: "🍖",
+                            image: "https://picsum.photos/seed/1020/800/600"
+                        },
+                        {
+                            startTime: "20:00",
+                            endTime: "23:00",
+                            type: "休息/娱乐",
+                            title: "休息或夜生活",
+                            description: "老人休息，年轻人可去附近酒吧或海边散步",
+                            icon: "🍹",
+                            image: "https://picsum.photos/seed/1049/800/600"
+                        }
+                    ]
+                },
+
+                // 第6天：2月25日周一 - 分界洲岛
+                {
+                    date: "2026-02-25",
+                    day: "第6天",
+                    weekday: "周一",
+                    route: "陵水 → 分界洲岛 → 陵水",
+                    hotel: {
+                        name: "陵水三正月酒店",
+                        location: "陵水",
+                        coordinates: [110.0377, 18.5054]
+                    },
+                    activities: [
+                        {
+                            startTime: "07:00",
+                            endTime: "09:00",
+                            type: "活动",
+                            title: "看日出+早餐",
+                            description: "清晨在清水湾看日出，这里的日出非常美丽",
+                            location: "清水湾",
+                            icon: "🌅",
+                            image: "https://picsum.photos/seed/1034/800/600"
+                        },
+                        {
+                            startTime: "09:00",
+                            endTime: "09:30",
+                            type: "交通",
+                            title: "前往分界洲岛码头",
+                            description: "驾车前往分界洲岛码头，准备乘船上岛",
+                            icon: "🚗",
+                            navigation: {
+                                from: "酒店",
+                                to: "分界洲岛码头",
+                                distance: "15km",
+                                duration: "20min"
+                            },
+                            image: "https://picsum.photos/seed/1028/800/600"
+                        },
+                        {
+                            startTime: "09:30",
+                            endTime: "10:00",
+                            type: "交通",
+                            title: "购票+乘船上岛",
+                            description: "购买船票和门票，乘船前往分界洲岛，享受海上风光",
+                            location: "分界洲岛码头",
+                            icon: "⛴️",
+                            image: "https://picsum.photos/seed/1001/800/600"
+                        },
+                        {
+                            startTime: "10:00",
+                            endTime: "13:00",
+                            type: "景点",
+                            title: "分界洲岛游玩",
+                            description: "观看魔鬼鱼表演 | 海洋馆参观（适合小孩） | 海底观光（玻璃船，老少皆宜） | 沙滩休闲",
+                            location: "分界洲岛",
+                            icon: "🐠",
+                            image: "https://picsum.photos/seed/1010/800/600"
+                        },
+                        {
+                            startTime: "13:00",
+                            endTime: "14:00",
+                            type: "餐饮",
+                            title: "岛上简餐",
+                            description: "在岛上餐厅简单用餐，补充体力",
+                            location: "分界洲岛",
+                            icon: "🍱",
+                            image: "https://picsum.photos/seed/1004/800/600"
+                        },
+                        {
+                            startTime: "14:00",
+                            endTime: "15:00",
+                            type: "活动",
+                            title: "继续游玩或返程",
+                            description: "可以继续在岛上游玩，或者准备乘船返回",
+                            icon: "🏝️",
+                            image: "https://picsum.photos/seed/1005/800/600"
+                        },
+                        {
+                            startTime: "15:30",
+                            endTime: "17:00",
+                            type: "休闲",
+                            title: "返回酒店休息",
+                            description: "乘船返回码头，驾车回酒店休息",
+                            icon: "🏨",
+                            navigation: {
+                                from: "分界洲岛码头",
+                                to: "酒店",
+                                distance: "15km",
+                                duration: "20min"
+                            },
+                            image: "https://picsum.photos/seed/1008/800/600"
+                        },
+                        {
+                            startTime: "17:00",
+                            endTime: "18:30",
+                            type: "活动",
+                            title: "酒店活动",
+                            description: "参加酒店的沙滩排球、游泳等活动",
+                            icon: "🏐",
+                            image: "https://picsum.photos/seed/1018/800/600"
+                        },
+                        {
+                            startTime: "18:30",
+                            endTime: "20:00",
+                            type: "餐饮",
+                            title: "酒店自助晚餐",
+                            description: "享用酒店丰盛的自助晚餐，各种美食任选",
+                            location: "酒店",
+                            icon: "🍽️",
+                            image: "https://picsum.photos/seed/1053/800/600"
+                        },
+                        {
+                            startTime: "20:00",
+                            endTime: "23:00",
+                            type: "休息/娱乐",
+                            title: "休息或夜生活",
+                            description: "老人休息，年轻人可去酒吧或海边散步",
+                            icon: "🍻",
+                            image: "https://picsum.photos/seed/1049/800/600"
+                        }
+                    ]
+                },
+
+                // 第7天：2月26日周二 - 返程
+                {
+                    date: "2026-02-26",
+                    day: "第7天",
+                    weekday: "周二",
+                    route: "陵水 → 三亚海棠湾 → 返程",
+                    hotel: null,
+                    activities: [
+                        {
+                            startTime: "07:00",
+                            endTime: "09:00",
+                            type: "活动",
+                            title: "晨跑+早餐+退房",
+                            description: "最后一次在海边晨跑，享用早餐后办理退房手续，收拾行李",
+                            icon: "🏃",
+                            image: "https://picsum.photos/seed/1054/800/600"
+                        },
+                        {
+                            startTime: "09:00",
+                            endTime: "10:30",
+                            type: "交通",
+                            title: "前往三亚海棠湾免税店",
+                            description: "驾车前往三亚海棠湾国际免税城，准备购物",
+                            icon: "🚗",
+                            navigation: {
+                                from: "陵水",
+                                to: "海棠湾免税店",
+                                distance: "30km",
+                                duration: "40min"
+                            },
+                            image: "https://picsum.photos/seed/1029/800/600"
+                        },
+                        {
+                            startTime: "10:30",
+                            endTime: "13:00",
+                            type: "购物",
+                            title: "海棠湾免税店购物",
+                            description: "在亚洲最大的免税店购物，买化妆品、奢侈品等，享受免税优惠",
+                            location: "海棠湾免税城",
+                            icon: "🛍️",
+                            image: "https://picsum.photos/seed/1022/800/600"
+                        },
+                        {
+                            startTime: "13:00",
+                            endTime: "14:00",
+                            type: "餐饮",
+                            title: "免税店附近简餐",
+                            description: "在免税店或附近餐厅简单用餐",
+                            icon: "🍴",
+                            image: "https://picsum.photos/seed/1017/800/600"
+                        },
+                        {
+                            startTime: "14:00",
+                            endTime: "16:00",
+                            type: "交通",
+                            title: "根据航班时间前往机场",
+                            description: "根据具体航班时间，提前2小时前往三亚凤凰机场",
+                            icon: "✈️",
+                            navigation: {
+                                from: "海棠湾",
+                                to: "凤凰机场",
+                                distance: "约50km",
+                                duration: "约1h"
+                            },
+                            image: "https://picsum.photos/seed/1026/800/600"
+                        },
+                        {
+                            startTime: "16:00",
+                            endTime: "18:00",
+                            type: "返程",
+                            title: "办理登机+返程",
+                            description: "办理登机手续，结束愉快的海南之旅，带着美好回忆返回家乡",
+                            location: "三亚凤凰机场",
+                            icon: "🏠",
+                            image: "https://picsum.photos/seed/1007/800/600"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        /**
+         * 地图关键点数据
+         */
+        const mapPoints = [
+            { name: "儋州（起点）", coords: [109.5765, 19.5211], type: "start" },
+            { name: "东方市", coords: [108.6532, 19.0952], type: "waypoint" },
+            { name: "南山寺", coords: [109.1738, 18.3089], type: "hotel" },
+            { name: "三亚凤凰机场", coords: [109.4120, 18.3028], type: "transport" },
+            { name: "万宁日月湾", coords: [110.3235, 18.7959], type: "hotel" },
+            { name: "山钦湾", coords: [110.3450, 18.7800], type: "attraction" },
+            { name: "陵水清水湾", coords: [110.0377, 18.5054], type: "hotel" },
+            { name: "分界洲岛", coords: [110.0698, 18.5429], type: "attraction" },
+            { name: "海棠湾免税店", coords: [109.7580, 18.3800], type: "shopping" }
+        ];
+
+        // ==================== 高德地图初始化 ====================
+
+        let map = null;
+        let markers = [];
+        let polylines = [];
+
+        function initMap() {
+            try {
+                map = new AMap.Map('map-container', {
+                    zoom: 8,
+                    center: [109.8, 18.8],
+                    mapStyle: 'amap://styles/whitesmoke',
+                    viewMode: '2D'
+                });
+
+                AMap.plugin(['AMap.Scale', 'AMap.ToolBar'], function() {
+                    if (map) {
+                        try {
+                            map.addControl(new AMap.Scale());
+                            map.addControl(new AMap.ToolBar());
+                        } catch(e) {
+                            console.log('控件加载失败', e);
+                        }
+                    }
+                });
+
+                drawRoute();
+            } catch(error) {
+                console.error('地图初始化错误:', error);
+                showMapError('地图初始化失败: ' + error.message);
+            }
+        }
+
+        function showMapError(message) {
+            document.getElementById('map-container').innerHTML = `
+                <div class="h-full flex items-center justify-center bg-gray-100">
+                    <div class="text-center p-6">
+                        <p class="text-red-600 font-bold mb-2">⚠️ 地图加载出现问题</p>
+                        <p class="text-gray-600 text-sm">${message}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function drawRoute() {
+            clearMap();
+
+            const iconConfig = {
+                start: { icon: '🏁', color: '#10b981' },
+                hotel: { icon: '🏨', color: '#3b82f6' },
+                attraction: { icon: '📸', color: '#f59e0b' },
+                waypoint: { icon: '📍', color: '#8b5cf6' },
+                transport: { icon: '✈️', color: '#ec4899' },
+                shopping: { icon: '🛍️', color: '#a855f7' }
+            };
+
+            const pathCoordinates = [];
+
+            mapPoints.forEach((point) => {
+                const config = iconConfig[point.type] || iconConfig.waypoint;
+
+                const markerContent = `
+                    <div style="
+                        background: white;
+                        padding: 8px 12px;
+                        border-radius: 20px;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                        font-size: 14px;
+                        font-weight: bold;
+                        color: ${config.color};
+                        border: 2px solid ${config.color};
+                        white-space: nowrap;
+                    ">
+                        ${config.icon} ${point.name}
+                    </div>
+                `;
+
+                const marker = new AMap.Marker({
+                    position: point.coords,
+                    content: markerContent,
+                    offset: new AMap.Pixel(-40, -20)
+                });
+
+                marker.setMap(map);
+                markers.push(marker);
+
+                const infoWindow = new AMap.InfoWindow({
+                    content: `<div style="padding:10px;"><strong>${point.name}</strong></div>`
+                });
+
+                marker.on('click', function() {
+                    infoWindow.open(map, marker.getPosition());
+                });
+
+                pathCoordinates.push(point.coords);
+            });
+
+            if (pathCoordinates.length > 1) {
+                const polyline = new AMap.Polyline({
+                    path: pathCoordinates,
+                    strokeColor: '#667eea',
+                    strokeWeight: 4,
+                    strokeStyle: 'solid',
+                    lineJoin: 'round',
+                    lineCap: 'round',
+                    showDir: true
+                });
+
+                polyline.setMap(map);
+                polylines.push(polyline);
+
+                map.setFitView();
+            }
+        }
+
+        function clearMap() {
+            markers.forEach(marker => marker.setMap(null));
+            polylines.forEach(polyline => polyline.setMap(null));
+            markers = [];
+            polylines = [];
+        }
+
+        // ==================== 行程时间轴生成 ====================
+
+        function generateTimeline() {
+            const timelineContainer = document.getElementById('timeline');
+            let html = '';
+
+            const typeColors = {
+                '准备': 'bg-yellow-50 border-yellow-200 text-yellow-800',
+                '交通': 'bg-blue-50 border-blue-200 text-blue-800',
+                '餐饮': 'bg-orange-50 border-orange-200 text-orange-800',
+                '景点': 'bg-green-50 border-green-200 text-green-800',
+                '活动': 'bg-purple-50 border-purple-200 text-purple-800',
+                '购物': 'bg-pink-50 border-pink-200 text-pink-800',
+                '住宿': 'bg-indigo-50 border-indigo-200 text-indigo-800',
+                '休闲': 'bg-teal-50 border-teal-200 text-teal-800',
+                '娱乐': 'bg-red-50 border-red-200 text-red-800',
+                '宗教活动': 'bg-purple-50 border-purple-200 text-purple-800',
+                '接机': 'bg-cyan-50 border-cyan-200 text-cyan-800',
+                '休息': 'bg-gray-50 border-gray-200 text-gray-800',
+                '休息/娱乐': 'bg-violet-50 border-violet-200 text-violet-800',
+                '交通+景点': 'bg-emerald-50 border-emerald-200 text-emerald-800',
+                '景点（可选）': 'bg-lime-50 border-lime-200 text-lime-800',
+                '返程': 'bg-slate-50 border-slate-200 text-slate-800'
+            };
+
+            travelData.days.forEach((day) => {
+                html += `
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+
+                        <!-- 日期标题 -->
+                        <div class="mb-4">
+                            <div class="flex flex-wrap items-center gap-2 mb-2">
+                                <h3 class="text-2xl font-bold text-gray-800">${day.day}</h3>
+                                <span class="tag bg-gray-100 text-gray-700">${day.date} ${day.weekday}</span>
+                                <span class="tag bg-blue-100 text-blue-700">🚗 ${day.route}</span>
+                            </div>
+                            ${day.hotel ? `
+                                <div class="tag bg-indigo-100 text-indigo-800">
+                                    🏨 住宿：${day.hotel.name}
+                                </div>
+                            ` : '<div class="tag bg-gray-100 text-gray-700">🏠 返程日</div>'}
+                        </div>
+
+                        <!-- 活动卡片 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            ${day.activities.map(activity => `
+                                <div class="activity-card bg-white rounded-xl shadow-md overflow-hidden border-l-4 ${typeColors[activity.type] || 'border-gray-200'}">
+                                    ${activity.image ? `
+                                        <img src="${activity.image}" alt="${activity.title}" class="activity-image" loading="lazy">
+                                    ` : ''}
+
+                                    <div class="p-4">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-3xl">${activity.icon}</span>
+                                            <span class="text-xs font-semibold ${typeColors[activity.type] || 'text-gray-600'} px-2 py-1 rounded-full bg-opacity-50">
+                                                ${activity.type}
+                                            </span>
+                                        </div>
+
+                                        <div class="time-badge text-sm mb-2">
+                                            ⏰ ${activity.startTime} - ${activity.endTime}
+                                        </div>
+
+                                        <h4 class="font-bold text-gray-800 mb-2 text-lg">${activity.title}</h4>
+                                        <p class="text-sm text-gray-600 leading-relaxed mb-2">${activity.description}</p>
+
+                                        ${activity.location ? `
+                                            <div class="text-xs text-gray-500 mb-2">
+                                                📍 ${activity.location}
+                                            </div>
+                                        ` : ''}
+
+                                        ${activity.navigation ? `
+                                            <div class="navigation-info">
+                                                <div class="flex items-center justify-between text-xs">
+                                                    <span>🚗 ${activity.navigation.from} → ${activity.navigation.to}</span>
+                                                </div>
+                                                <div class="flex items-center justify-between text-xs mt-1">
+                                                    <span>📏 ${activity.navigation.distance}</span>
+                                                    <span>⏱️ ${activity.navigation.duration}</span>
+                                                </div>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            timelineContainer.innerHTML = html;
+        }
+
+        // ==================== 动态加载高德地图 API ====================
+
+        /**
+         * 从 serverless function 获取 API 配置并动态加载高德地图
+         */
+        async function loadAmapAPI() {
+            try {
+                console.log('正在从服务器获取地图配置...');
+
+                // 从 serverless function 获取 API 密钥
+                const response = await fetch('/api/map-config');
+
+                if (!response.ok) {
+                    throw new Error(`配置请求失败: ${response.status}`);
+                }
+
+                const config = await response.json();
+
+                if (!config.amapKey) {
+                    throw new Error('未获取到有效的 API 密钥');
+                }
+
+                console.log('成功获取地图配置，正在加载高德地图 API...');
+
+                // 动态创建并加载高德地图 script 标签
+                return new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    script.src = `https://webapi.amap.com/maps?v=${config.amapVersion || '2.0'}&key=${config.amapKey}&plugin=${config.amapPlugins || 'AMap.Scale,AMap.ToolBar'}`;
+
+                    script.onload = () => {
+                        console.log('高德地图 API 加载成功');
+                        resolve();
+                    };
+
+                    script.onerror = () => {
+                        reject(new Error('高德地图 API 加载失败'));
+                    };
+
+                    document.head.appendChild(script);
+                });
+
+            } catch (error) {
+                console.error('加载地图 API 失败:', error);
+                throw error;
+            }
+        }
+
+        // ==================== 页面加载完成后执行 ====================
+
+        window.onload = async function() {
+            console.log('开始生成行程时间轴...');
+            try {
+                generateTimeline();
+                console.log('行程时间轴生成成功');
+            } catch(e) {
+                console.error('时间轴生成失败:', e);
+                document.getElementById('timeline').innerHTML = `
+                    <div class="text-red-600 p-4 bg-red-50 rounded">
+                        时间轴生成失败: ${e.message}
+                    </div>
+                `;
+            }
+
+            try {
+                addScrollAnimations();
+            } catch(e) {
+                console.log('滚动动画初始化失败（不影响功能）:', e);
+            }
+
+            // 动态加载高德地图 API
+            try {
+                await loadAmapAPI();
+
+                // 等待 AMap 全局对象就绪
+                if (typeof AMap !== 'undefined') {
+                    console.log('开始初始化地图...');
+                    initMap();
+                } else {
+                    throw new Error('AMap 对象未定义');
+                }
+            } catch(e) {
+                console.error('地图加载失败:', e);
+                showMapError('地图加载失败: ' + e.message + '。请检查网络连接或联系管理员。');
+            }
+        };
+
+        function addScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '0';
+                        entry.target.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            entry.target.style.transition = 'all 0.5s ease';
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, 100);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.timeline-item').forEach(item => {
+                observer.observe(item);
+            });
+        }
+
+        window.addEventListener('resize', function() {
+            if (map) {
+                setTimeout(() => {
+                    map.setFitView();
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html>

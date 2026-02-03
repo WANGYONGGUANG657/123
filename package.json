@@ -1,0 +1,13 @@
+{
+  "name": "hainan-travel-plan",
+  "version": "1.0.0",
+  "description": "海南家庭旅游计划网页",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel"
+  },
+  "keywords": ["travel", "hainan", "itinerary"],
+  "author": "",
+  "license": "MIT"
+}
